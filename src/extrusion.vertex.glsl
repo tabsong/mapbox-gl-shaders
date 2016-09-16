@@ -6,14 +6,16 @@ precision highp float;
 #define highp
 #endif
 
+uniform mat4 u_matrix;
+uniform vec3 u_lightcolor;
+uniform lowp vec3 u_lightdir;
+uniform lowp float u_lightintensity;
+uniform lowp vec4 u_outline_color;
+
 attribute vec2 a_pos;
 attribute vec3 a_normal;
 attribute float a_edgedistance;
-uniform mat4 u_matrix;
-uniform lowp vec3 u_lightdir;
-uniform vec3 u_lightcolor;
-uniform lowp float u_lightintensity;
-uniform lowp vec4 u_outline_color;
+
 varying vec4 v_color;
 
 #ifndef MAPBOX_GL_JS
@@ -42,8 +44,6 @@ void main() {
     color = u_outline_color;
 #endif
 
-    vec3 lightcolor = u_lightcolor;
-
     // How dark/bright is the surface color?
     float colorvalue = (color.r + color.g + color.b) / 3.0;
 
@@ -62,7 +62,6 @@ void main() {
     // the range of values for highlight/shading is narrower
     // with lower light intensity
     // and with lighter/brighter surface colors
-    //directional = mix((1.0 - lightintensity), max((2.0 - colorvalue + lightintensity), 1.0), directional);
     directional = mix((1.0 - u_lightintensity), max((1.0 - colorvalue + u_lightintensity), 1.0), directional);
 
     // Add gradient along z axis of side surfaces
@@ -74,7 +73,7 @@ void main() {
     // Assign final color based on surface + ambient light color, diffuse light directional, and light color
     // with lower bounds adjusted to hue of light
     // so that shading is tinted with the complementary (opposite) color to the light color
-    v_color.r += clamp(color.r * directional * lightcolor.r, mix(0.0, 0.3, 1.0 - lightcolor.r), 1.0);
-    v_color.g += clamp(color.g * directional * lightcolor.g, mix(0.0, 0.3, 1.0 - lightcolor.g), 1.0);
-    v_color.b += clamp(color.b * directional * lightcolor.b, mix(0.0, 0.3, 1.0 - lightcolor.b), 1.0);
+    v_color.r += clamp(color.r * directional * u_lightcolor.r, mix(0.0, 0.3, 1.0 - u_lightcolor.r), 1.0);
+    v_color.g += clamp(color.g * directional * u_lightcolor.g, mix(0.0, 0.3, 1.0 - u_lightcolor.g), 1.0);
+    v_color.b += clamp(color.b * directional * u_lightcolor.b, mix(0.0, 0.3, 1.0 - u_lightcolor.b), 1.0);
 }
