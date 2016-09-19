@@ -45,7 +45,8 @@ void main() {
 #endif
 
     // How dark/bright is the surface color?
-    float colorvalue = (color.r + color.g + color.b) / 3.0;
+    // Relative luminance – use this for colorvalue instead? Is there gamma correction?
+    float colorvalue = color.r * 0.2126 + color.g * 0.7152 + color.b * 0.0722;
 
     v_color = vec4(0.0, 0.0, 0.0, 1.0);
 
